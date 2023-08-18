@@ -11,7 +11,9 @@ from flytekit import CronSchedule, LaunchPlan
 from flytekit.types.file import FlyteFile
 
 # Note:
-# the ds partition will be custom format-able.
+# the ds partition will be custom format-able. We're thinking something like
+#   {{ .inputs.date[%YYYY-%DD_%m] }}
+# following some standard convention.
 # Also names and partition keys and values all need to be URL sanitized (see below)
 RideCountData = Artifact(name="ride_count_data", partitions={"region": "{{ .inputs.region }}",
                                                              "ds": "{{ .inputs.date }}"})
@@ -63,8 +65,8 @@ lp_gather_data = LaunchPlan.get_or_create(
 # You should be able to get the output of the task via this URL
 # flyte://project/domain/ride_count_data@<exec-id>
 # To retrieve a specific partition, you can append params (note the format of the
-# flyte://project/domain/ride_count_data@<exec-id>?region=SEA&ds=23_03-7
-# flyte://project/domain/ride_count_data?region=SEA&ds=23_03-7 -> gets the latest one
+# flyte://av0.1/project/domain/ride_count_data@<exec-id>?region=SEA&ds=23_03-7
+# flyte://av0.1/project/domain/ride_count_data?region=SEA&ds=23_03-7 -> gets the latest one
 
 # Example of what one would have to write in normal Flyte.
 # @workflow
@@ -78,12 +80,12 @@ Model = Annotated[FlyteFile, Artifact(name="my-model", tags=["{{ .inputs.region 
 
 # Note:
 # Using a file in place of an nn.Module for simplicity
-# This model will be accessible at flyte://project/domain/my-model@<exec-id>
-# If you use flyte://project/domain/my-model, you will get the latest (chronological) artifact.
+# This model will be accessible at flyte://av0.1/project/domain/my-model@<exec-id>
+# If you use flyte://av0.1/project/domain/my-model, you will get the latest (chronological) artifact.
 # What's a tag? I think we should have both a notion of a tag and a version. A tag is a string that can move
 # and point to different artifacts over time. A version is a fixed immutable field of the Artifact object.
 # To access the latest Model for a given tag, you can use a url like this:
-# flyte://project/domain/my-model:SEA
+# flyte://av0.1/project/domain/my-model:SEA
 
 
 @task
