@@ -66,6 +66,7 @@ lp_gather_data = LaunchPlan.get_or_create(
 # flyte://project/domain/ride_count_data@<exec-id>?region=SEA&ds=23_03-7
 # flyte://project/domain/ride_count_data?region=SEA&ds=23_03-7 -> gets the latest one
 
+# Example of what one would have to write in normal Flyte.
 # @workflow
 # def gather_data_and_run_model(region: str, date: datetime):
 #     data = gather_data(region=region, date=date)
