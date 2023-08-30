@@ -88,8 +88,13 @@ Model = Annotated[FlyteFile, Artifact(name="my-model", tags=["{{ .inputs.region 
 # flyte://av0.1/project/domain/my-model:SEA
 
 
+# @task
+# def train_model(region: str, data: pd.DataFrame) -> Model:
+#     print(f"Training model for region {region} with data {data}")
+#     return FlyteFile(__file__)
+
 @task
-def train_model(region: str, data: pd.DataFrame) -> Model:
+def train_model(region: str, data: pd.DataFrame) -> FlyteFile:
     print(f"Training model for region {region} with data {data}")
     return FlyteFile(__file__)
 
@@ -102,5 +107,8 @@ data_query = Artifact(name="ride_count_data", partitions={"region": "{{ .inputs.
 
 
 @workflow
-def run_train_model(region: str, data: pd.DataFrame = data_query):
-    train_model(region=region, data=data)
+def run_train_model(region: str, data: pd.DataFrame = data_query) -> Model:
+    return train_model(region=region, data=data)
+
+
+
