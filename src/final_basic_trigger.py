@@ -37,6 +37,7 @@ t1 = Trigger.on(
     region="SEA",
 )
 
+# Kevin says: ditch the .query - because a Trigger is looking at it, it can assume it's a query
 t2 = Trigger.on(hourly_upstream=Artifact.query(name="hourly_upstream", partitions={"ds": "{{ .locals.foo }}"}),).run(
     downstream,
     daily_upstream=Artifact.query(name="daily_upstream", partitions={"ds": "{{ .trigger.locals.foo[%YYYY-%MM-%DD] }}"}),

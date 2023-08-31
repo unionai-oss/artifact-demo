@@ -35,3 +35,19 @@ t1 = Trigger.on(daily_upstream=Artifact.query(name="upstream_data", partitions={
     },
 )
 
+
+"""
+The dependency structure is like
+
+         upstream_data::            upstream_data::              upstream_data::
+           ds=2023-02-01              ds=2023-02-02                ds=2023-02-03
+                |                          |                            |
+                |                          |                            |
+                ↓                          ↓                            ↓
+               cyclic-tar::               cyclic-tar::                 cyclic-tar::
+                  ds=2023-02-01              ds=2023-02-02                ds=2023-02-03
+                     \ ____________________↗             \ ______________↗
+
+If for whatever reason, we know that upstream_data for Feb. 1st and Feb. 2nd will be regenerated, we should
+make sure upstream data gets updated for Feb. 1st first, otherwise you'll end up running 2/2 and 2/3 twice.
+"""
