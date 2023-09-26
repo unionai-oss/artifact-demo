@@ -1,22 +1,25 @@
-import typing
 import random
-import pandas as pd
-
+import typing
 from datetime import datetime
+
+import pandas as pd
+from flytekit import CronSchedule, LaunchPlan
 from flytekit.core.artifact import Artifact
 from flytekit.core.task import task
 from flytekit.core.workflow import workflow
-from typing_extensions import Annotated
-from flytekit import CronSchedule, LaunchPlan
 from flytekit.types.file import FlyteFile
+from typing_extensions import Annotated
 
 # Note:
 # the ds partition will be custom format-able. We're thinking something like
 #   {{ .inputs.date[%YYYY-%DD_%m] }}
 # following some standard convention.
 # Also names and partition keys and values all need to be URL sanitized (see below)
-RideCountData = Artifact(name="ride_count_data", partitions={"region": "{{ .inputs.region }}",
-                                                             "ds": "{{ .inputs.date }}"})
+RideCountData = Artifact(
+    name="ride_count_data",
+    time_partition="{{ .inputs.date }}",
+    partitions={"region": "{{ .inputs.region }}"},
+)
 
 
 def get_permutations(s: str) -> typing.List[str]:
@@ -24,7 +27,7 @@ def get_permutations(s: str) -> typing.List[str]:
         return [s]
     permutations = []
     for i, char in enumerate(s):
-        remaining_chars = s[:i] + s[i + 1:]
+        remaining_chars = s[:i] + s[i + 1 :]
         for perm in get_permutations(remaining_chars):
             permutations.append(char + perm)
 
@@ -93,6 +96,7 @@ Model = Annotated[FlyteFile, Artifact(name="my-model", tags=["{{ .inputs.region 
 #     print(f"Training model for region {region} with data {data}")
 #     return FlyteFile(__file__)
 
+
 @task
 def train_model(region: str, data: pd.DataFrame) -> FlyteFile:
     print(f"Training model for region {region} with data {data}")
@@ -102,13 +106,15 @@ def train_model(region: str, data: pd.DataFrame) -> FlyteFile:
 # This query will return the latest artifact for a given region and date.
 # Note:
 # The ds here is templated from a different source.
-data_query = Artifact(name="ride_count_data", partitions={"region": "{{ .inputs.region }}",
-                                                          "ds": "{{ .execution.kickoff_time }}"}).as_query()
+data_query = Artifact(
+    name="ride_count_data",
+    time_partition="{{ .inputs.kickoff_time }}",
+    partitions={
+        "region": "{{ .inputs.region }}",
+    },
+).query()
 
 
 @workflow
-def run_train_model(region: str, data: pd.DataFrame = data_query) -> Model:
+def run_train_model(region: str, kickoff_time: datetime, data: pd.DataFrame = data_query) -> Model:
     return train_model(region=region, data=data)
-
-
-
