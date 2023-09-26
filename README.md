@@ -40,7 +40,7 @@ There are two source files in here currently. There is a companion notebook `art
 To register these files, run
 
 ```bash
-pyflyte -c ~/.flyte/config-sandbox.yaml register --image ghcr.io/flyteorg/flytecookbook:a_6ffaa3af865d082d511f9533a659f8e5bd6dfa6 artifact_ux
+pyflyte -c ~/.flyte/config-sandbox.yaml register --image ghcr.io/flyteorg/flytecookbook:a_6ffaa3af865d082d511f9533a659f8e5bd6dfa6b artifact_ux
 ```
 
 The latest image for this repo is `ghcr.io/flyteorg/flytecookbook:a_6ffaa3af865d082d511f9533a659f8e5bd6dfa6b`. If the requirements are changed, we will update the image here. If you want to add your own pip/apt requirements, you'll have to rebuild the image as well - just make sure you include the non-merged `flytekit` and `flyteidl` pypi packages.
