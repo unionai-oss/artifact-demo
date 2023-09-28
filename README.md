@@ -24,9 +24,16 @@ Create a new virtual environment for this project and install dependencies
 
 ```bash
 python3 -m venv ~/envs/artifacts
+. ~/envs/artifacts/bin/activate
 pip install jupyterlab
 pip install -U --force-reinstall "git+https://github.com/flyteorg/flytekit.git@artifacts"
 pip install --no-deps -U --force-reinstall "git+https://github.com/flyteorg/flyteidl.git@artifacts"
+```
+
+Find a suitable place in your source folder and git clone this repo.
+
+```bash
+git clone git@github.com:unionai-oss/artifact-demo.git
 ```
 
 For those familiar with the regular `flytectl demo` environment, it should look and behave the same. On the backend there's basically just one more service (the artifact service) and one more dependency (redis, which is used as a local-only stand-in for pub/sub).
