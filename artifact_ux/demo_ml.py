@@ -104,12 +104,6 @@ def train_model(region: str, data: pd.DataFrame) -> FlyteFile:
 # This query will return the latest artifact for a given region and date.
 # Note:
 # The ds here is templated from a different source.
-# data_query = Artifact(
-#     name="ride_count_data",
-#     time_partitioned=True,
-#     partition_keys=["region"],
-#     },
-# ).query(region=Inputs.region, time_partition=Inputs.kickoff_time)
 data_query = RideCountData.query(region=Inputs.region, time_partition=Inputs.kickoff_time)
 
 
