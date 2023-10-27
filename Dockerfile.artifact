@@ -9,5 +9,5 @@ ENV PYTHONPATH /root
 RUN apt-get update && apt-get install build-essential git curl -y
 
 RUN pip install flytekitplugins-deck-standard==1.8.0 rich marshmallow_enum
-RUN pip install --no-deps -U --force-reinstall "git+https://github.com/flyteorg/flyteidl.git@78caf2c2eeb36a78e57b35806be37f2f48167b82"
-RUN pip install --no-deps -U --force-reinstall "git+https://github.com/flyteorg/flytekit.git@c63a7cc4c4eebc46b0f1a9e61cfc0dc73693e939"
+RUN pip install --no-deps -U --force-reinstall "git+https://github.com/flyteorg/flyte.git@e6227ec38105d21f0fa48274bcf0bf83d517b241#subdirectory=flyteidl"
+RUN pip install --no-deps -U --force-reinstall "git+https://github.com/flyteorg/flytekit.git@7f5cf25d2dd938425f4f758f7fd0701247b4f7a9"

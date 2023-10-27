@@ -4,21 +4,17 @@ from datetime import datetime
 
 import pandas as pd
 from flytekit import CronSchedule, LaunchPlan
-from flytekit.core.artifact import Artifact
+from flytekit.core.artifact import Artifact, Inputs
 from flytekit.core.task import task
 from flytekit.core.workflow import workflow
 from flytekit.types.file import FlyteFile
 from typing_extensions import Annotated
 
-# Note:
-# the ds partition will be custom format-able. We're thinking something like
-#   {{ .inputs.date[%YYYY-%DD_%m] }}
-# following some standard convention.
-# Also names and partition keys and values all need to be URL sanitized (see below)
+
 RideCountData = Artifact(
     name="ride_count_data",
-    time_partition="{{ .inputs.date }}",
-    partitions={"region": "{{ .inputs.region }}"},
+    time_partitioned=True,
+    partition_keys=["region"],
 )
 
 
@@ -35,7 +31,7 @@ def get_permutations(s: str) -> typing.List[str]:
 
 
 @task
-def gather_data(region: str, date: datetime) -> Annotated[pd.DataFrame, RideCountData]:
+def gather_data(region: str, date: datetime) -> Annotated[pd.DataFrame, RideCountData.bind_time_partition(Inputs.date)(region=Inputs.region)]:
     """
     This task will produce a dataframe for a given region and date.  The dataframe will be stored in a well-known
     location, and will be versioned by the region and date.
@@ -78,7 +74,9 @@ lp_gather_data = LaunchPlan.get_or_create(
 #     train_model(region=region, data=data)
 
 
-Model = Annotated[FlyteFile, Artifact(name="my-model", tags=["{{ .inputs.region }}"])]
+# todo: update region input
+ModelArtifact = Artifact(name="my-model", tags=["{{ .inputs.region }}"])
+Model = Annotated[FlyteFile, ModelArtifact]
 
 
 # Note:
@@ -106,13 +104,7 @@ def train_model(region: str, data: pd.DataFrame) -> FlyteFile:
 # This query will return the latest artifact for a given region and date.
 # Note:
 # The ds here is templated from a different source.
-data_query = Artifact(
-    name="ride_count_data",
-    time_partition="{{ .inputs.kickoff_time }}",
-    partitions={
-        "region": "{{ .inputs.region }}",
-    },
-).query()
+data_query = RideCountData.query(region=Inputs.region, time_partition=Inputs.kickoff_time)
 
 
 @workflow
