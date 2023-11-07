@@ -31,9 +31,9 @@ def get_permutations(s: str) -> typing.List[str]:
 
 
 @task
-def gather_data(region: str, date: datetime) -> Annotated[pd.DataFrame, RideCountData.bind_time_partition(Inputs.date)(region=Inputs.region)]:
+def gather_data(region: str, date: datetime) -> Annotated[pd.DataFrame, RideCountData(time_partition=Inputs.date, region=Inputs.region)]:
     """
-    This task will produce a dataframe for a given region and date.  The dataframe will be stored in a well-known
+    This task will produce a dataframe for a given region and date. The dataframe will be stored in a well-known
     location, and will be versioned by the region and date.
     """
     print(f"Running gather data for region {region} and date {date}")

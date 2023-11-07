@@ -12,10 +12,8 @@ from flytekit.types.directory import FlyteDirectory
 from flytekit.types.file import FlyteFile
 from typing_extensions import Annotated
 
-TimeSeriesArtifact = Artifact(
-    name="timeseries-hashed", time_partition="{{ .inputs.as_of }}"
-)
-Upstream = Artifact(name="upstream_data", time_partition="{{ .inputs.ds }}")
+TimeSeriesArtifact = Artifact(name="timeseries-hashed", time_partitioned=True)
+Upstream = Artifact(name="upstream_data", time_partitioned=True)
 
 
 @task
