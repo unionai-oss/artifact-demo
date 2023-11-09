@@ -46,7 +46,7 @@ def update_hashes(
     as_of: datetime,
     upstream_data: FlyteDirectory,
     hashes_file: typing.Optional[FlyteFile],
-) -> Annotated[FlyteFile, TimeSeriesArtifact]:
+) -> Annotated[FlyteFile, TimeSeriesArtifact(time_partition=Inputs.as_of)]:
     """
     This task takes a folder of upstream_data, and a file of hashes. When called, it will traverse the folder,
     hash all the files, remove the hashes that no longer exist, update the hashes that have changed, add the new files
