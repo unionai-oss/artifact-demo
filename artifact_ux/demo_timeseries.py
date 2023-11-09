@@ -6,7 +6,7 @@ import typing
 from datetime import datetime, timedelta
 
 from flytekit import task, workflow
-from flytekit.core.artifact import Artifact
+from flytekit.core.artifact import Artifact, Inputs
 from flytekit.trigger import Trigger
 from flytekit.types.directory import FlyteDirectory
 from flytekit.types.file import FlyteFile
@@ -37,7 +37,7 @@ def create_directory(ds: datetime) -> FlyteDirectory:
 
 
 @workflow
-def create_upstream_directory(ds: datetime) -> Annotated[FlyteDirectory, Upstream]:
+def create_upstream_directory(ds: datetime) -> Annotated[FlyteDirectory, Upstream(time_partition=Inputs.ds)]:
     return create_directory(ds=ds)
 
 
