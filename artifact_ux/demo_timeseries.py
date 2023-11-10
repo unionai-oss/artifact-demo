@@ -6,16 +6,14 @@ import typing
 from datetime import datetime, timedelta
 
 from flytekit import task, workflow
-from flytekit.core.artifact import Artifact
+from flytekit.core.artifact import Artifact, Inputs
 from flytekit.trigger import Trigger
 from flytekit.types.directory import FlyteDirectory
 from flytekit.types.file import FlyteFile
 from typing_extensions import Annotated
 
-TimeSeriesArtifact = Artifact(
-    name="timeseries-hashed", time_partition="{{ .inputs.as_of }}"
-)
-Upstream = Artifact(name="upstream_data", time_partition="{{ .inputs.ds }}")
+TimeSeriesArtifact = Artifact(name="timeseries-hashed", time_partitioned=True)
+Upstream = Artifact(name="upstream_data", time_partitioned=True)
 
 
 @task
@@ -39,7 +37,7 @@ def create_directory(ds: datetime) -> FlyteDirectory:
 
 
 @workflow
-def create_upstream_directory(ds: datetime) -> Annotated[FlyteDirectory, Upstream]:
+def create_upstream_directory(ds: datetime) -> Annotated[FlyteDirectory, Upstream(time_partition=Inputs.ds)]:
     return create_directory(ds=ds)
 
 
@@ -48,7 +46,7 @@ def update_hashes(
     as_of: datetime,
     upstream_data: FlyteDirectory,
     hashes_file: typing.Optional[FlyteFile],
-) -> Annotated[FlyteFile, TimeSeriesArtifact]:
+) -> Annotated[FlyteFile, TimeSeriesArtifact(time_partition=Inputs.as_of)]:
     """
     This task takes a folder of upstream_data, and a file of hashes. When called, it will traverse the folder,
     hash all the files, remove the hashes that no longer exist, update the hashes that have changed, add the new files

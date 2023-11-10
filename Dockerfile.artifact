@@ -10,4 +10,4 @@ RUN apt-get update && apt-get install build-essential git curl -y
 
 RUN pip install flytekitplugins-deck-standard==1.8.0 rich marshmallow_enum
 RUN pip install --no-deps -U --force-reinstall "git+https://github.com/flyteorg/flyte.git@e6227ec38105d21f0fa48274bcf0bf83d517b241#subdirectory=flyteidl"
-RUN pip install --no-deps -U --force-reinstall "git+https://github.com/flyteorg/flytekit.git@7f5cf25d2dd938425f4f758f7fd0701247b4f7a9"
+RUN pip install --no-deps -U --force-reinstall "git+https://github.com/flyteorg/flytekit.git@c5ff5f1c21538476d82bc7f66023c6aa57014add"
